@@ -1,8 +1,15 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:menem/controllers/authcontroller.dart';
+import 'package:menem/controllers/postcontroller.dart';
 import 'package:menem/views/posts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddPost1 extends StatefulWidget {
   const AddPost1({super.key});
@@ -12,68 +19,9 @@ class AddPost1 extends StatefulWidget {
 }
 
 class _AddPost1State extends State<AddPost1> {
-  int _selectedIndex = 0;
-  final List<Widget> _widgetOptions = [
-    Text(
-      'Posts appear here',
-    ),
-    Text(
-      'Certificate',
-    ),
-    AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      title: Text('Create Post'),
-      content: SizedBox(
-        height: 100,
-        width: 300,
-        child: Container(
-          alignment: Alignment.centerLeft,
-          child: Column(
-            children: <Widget>[
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                    onPressed: () {
-                      Get.to(AddPost1());
-                    },
-                    icon: Icon(
-                      Icons.edit_note,
-                      color: Colors.black,
-                    ),
-                    label: Text(
-                      "What would you like to talk",
-                      style: TextStyle(color: Colors.black),
-                    )),
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.add_photo_alternate,
-                      color: Colors.black,
-                    ),
-                    label: Text("Add a photo",
-                        style: TextStyle(color: Colors.black))),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
-    Text(
-      'Play Games',
-    ),
-    Text(
-      'Profile',
-    ),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  String filepath = "";
+  late XFile image;
+  PostController controller = Get.put(PostController());
 
   @override
   Widget build(BuildContext context) {
@@ -98,8 +46,8 @@ class _AddPost1State extends State<AddPost1> {
                   color: Colors.black),
             ),
             Padding(
-              padding:
-                  EdgeInsets.only(left: MediaQuery.of(context).size.width * .4),
+              padding: EdgeInsets.only(
+                  left: MediaQuery.of(context).size.width * .33),
               child: ElevatedButton(
                 onPressed: () {},
                 style: ButtonStyle(
@@ -154,21 +102,60 @@ class _AddPost1State extends State<AddPost1> {
               child: TextFormField(
                 decoration: InputDecoration(labelText: "What you think?"),
               ),
+            ),
+            Container(
+              child: filepath == ""
+                  ? Image.network(
+                      "src",
+                      width: 200,
+                      height: 300,
+                    )
+                  : Image.file(
+                      File(filepath),
+                      width: 200,
+                      height: 300,
+                    ),
             )
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-              icon: Icon(Icons.camera_enhance_outlined), label: "Camera"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.photo_sharp), label: "Gallery"),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black87,
-        onTap: _onItemTapped,
+      floatingActionButton: Container(
+        padding: EdgeInsets.only(left: 25),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            FloatingActionButton(
+              backgroundColor: Colors.transparent,
+              onPressed: () async {
+                image = (await ImagePicker()
+                    .pickImage(source: ImageSource.camera)) as XFile;
+                if (image != null) {
+                  filepath = image.path;
+                }
+                print(controller.getPosts());
+              },
+              child: Icon(
+                Icons.camera_alt_outlined,
+                color: Colors.black,
+              ),
+            ),
+            FloatingActionButton(
+              backgroundColor: Colors.transparent,
+              onPressed: () async {
+                image = (await ImagePicker()
+                    .pickImage(source: ImageSource.gallery)) as XFile;
+                if (image != null) {
+                  filepath = image.path;
+                  print(filepath);
+                }
+              },
+              child: Icon(
+                Icons.insert_photo_outlined,
+                color: Colors.black,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

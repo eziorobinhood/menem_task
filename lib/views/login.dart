@@ -81,12 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: ElevatedButton(
                   child: Text('Login'),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => PostsScreen(),
-                      ),
-                    );
+                    controller.sendLoginData();
                   },
                 ),
               ),

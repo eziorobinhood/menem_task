@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:menem/views/add_post.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PostsScreen extends StatefulWidget {
   const PostsScreen({super.key});
@@ -16,11 +17,22 @@ class _PostsScreenState extends State<PostsScreen> {
     Navigator.push(context, MaterialPageRoute(builder: (_) => screenname));
   }
 
+  late String token = getToken();
+  getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('access_token');
+    print(token);
+  }
+
+  @override
+  void initState() {
+    getToken();
+    super.initState();
+  }
+
   int _selectedIndex = 0;
   final List<Widget> _widgetOptions = [
-    Text(
-      'Posts appear here',
-    ),
+    Text("Yourpost here"),
     Text(
       'Certificate',
     ),
@@ -93,7 +105,7 @@ class _PostsScreenState extends State<PostsScreen> {
         ),
         title: Container(
           padding:
-              EdgeInsets.only(left: MediaQuery.of(context).size.width * .55),
+              EdgeInsets.only(left: MediaQuery.of(context).size.width * .53),
           child: Row(
             children: [
               IconButton(
